@@ -54,7 +54,7 @@ bool AssetManager::AddModel(UUID id, std::shared_ptr<Model> model)
 	return true;
 }
 
-std::shared_ptr<Image> AssetManager::GetTexture(UUID id)
+std::shared_ptr<Texture2D> AssetManager::GetTexture(UUID id)
 {
 	for (const auto& _texture : m_Textures)
 	{
@@ -68,7 +68,7 @@ std::shared_ptr<Image> AssetManager::GetTexture(UUID id)
 	return nullptr;
 }
 
-bool AssetManager::AddTexture(UUID id, std::shared_ptr<Image> texture)
+bool AssetManager::AddTexture(UUID id, std::shared_ptr<Texture2D> texture)
 {
 	for (auto _texture : m_Textures)
 	{

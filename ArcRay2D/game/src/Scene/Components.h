@@ -251,7 +251,7 @@
 		void SetSourceVec(Vector4 rect) { source = Rectangle{ rect.x, rect.y, rect.z, rect.w }; };
 		void SetDestRec(Rectangle rect) { dest = rect; };
 		void SetDestVec(Vector4 rect) { dest = Rectangle{ rect.x, rect.y, rect.z, rect.w }; };
-		Ref<Image> getSprite() { return AssetManager::Instance()->GetTexture(refID); } // Returns the corresponding assetManager model with this ID
+		Ref<Texture2D> getSprite() { return AssetManager::Instance()->GetTexture(refID); } // Returns the corresponding assetManager model with this ID
 	};
 
 	struct ProjectileComponent {

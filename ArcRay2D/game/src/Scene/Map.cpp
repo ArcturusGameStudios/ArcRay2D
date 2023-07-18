@@ -194,16 +194,14 @@
 		for (entt::entity entity : viewTextureTransform)
 		{
 			auto [_transform, _sprite] = viewTextureTransform.get<TransformComponent, SpriteComponent>(entity);
-			Texture2D texture = LoadTextureFromImage(*_sprite.getSprite());
 			DrawTexturePro(
-				texture,
+				*_sprite.getSprite(),
 				_sprite.source,
 				_sprite.dest,
 				Vector2(_transform.GetTranslation()),
 				_transform.GetRotationRad(),
 				RAYWHITE
 			);
-			UnloadTexture(texture);
 		}
 
 		EndMode2D();

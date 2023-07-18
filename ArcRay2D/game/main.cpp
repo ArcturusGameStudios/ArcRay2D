@@ -27,7 +27,7 @@ int main()
 	UUID cupModelID;
 	UUID medalSpriteID;
 	std::shared_ptr<Model> cupModel = CreateRef<Model>(LoadModel("assets/models/teamugobj.obj"));
-	std::shared_ptr<Image> medalSprites = CreateRef<Image>(LoadImage("assets/textures/medalsCondensed.png"));
+	std::shared_ptr<Texture2D> medalSprites = CreateRef<Texture2D>(LoadTexture("assets/textures/medalsCondensed.png"));
 	AssetManagerInstance->AddModel(cupModelID, cupModel);
 	AssetManagerInstance->AddTexture(medalSpriteID, medalSprites);
 
@@ -50,7 +50,7 @@ int main()
 	b2BodyDef* def = new b2BodyDef();
 	def->position = circle.GetComponent<TransformComponent>().GetTranslation();
 	def->type = b2BodyType::b2_dynamicBody;
-	def->angularVelocity = 20.0f;
+//	def->angularVelocity = 20.0f;
 	b2CircleShape* shape = new b2CircleShape();
 	shape->m_radius = circle.GetComponent<TransformComponent>().GetScale().x;
 	circle.AddComponent<Box2DBodyComponent>(def);
