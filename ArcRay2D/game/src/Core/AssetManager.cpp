@@ -53,3 +53,37 @@ bool AssetManager::AddModel(UUID id, std::shared_ptr<Model> model)
 	m_models.emplace(id, model);
 	return true;
 }
+
+std::shared_ptr<Image> AssetManager::GetTexture(UUID id)
+{
+	for (const auto& _texture : m_Textures)
+	{
+		if (_texture.first == id)
+		{
+			//			std::cout << "Model found with ID: " << (id) << std::endl;
+			return _texture.second;
+		}
+	}
+	//	std::cout << "Model not found!" << std::endl;
+	return nullptr;
+}
+
+bool AssetManager::AddTexture(UUID id, std::shared_ptr<Image> texture)
+{
+	for (auto _texture : m_Textures)
+	{
+		if (_texture.first == id)
+		{
+			//			std::cout << "Model found with ID: " << (id) << std::endl;
+			return false;
+		}
+		if (_texture.second = texture)
+		{
+			//			std::cout << "Model found with ID: " << (_model.first) << std::endl;
+			return false;
+		}
+	}
+	//	std::cout << "Model not found, creating new asset with ID: " << (id) << std::endl;
+	m_Textures.emplace(id, texture);
+	return true;
+}

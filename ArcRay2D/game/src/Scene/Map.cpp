@@ -189,16 +189,21 @@
 			world->DebugDraw();
 		}
 
-		auto viewModelTransform = m_Registry.view<ModelComponent, TransformComponent>();
+		auto viewTextureTransform = m_Registry.view<SpriteComponent, TransformComponent>();
 //		auto group = m_Registry.group<TransformComponent>(entt::get<ModelComponent>);
-		for (entt::entity entity : viewModelTransform)
+		for (entt::entity entity : viewTextureTransform)
 		{
-			auto [_transform, _model] = viewModelTransform.get<TransformComponent, ModelComponent>(entity);
-//			DrawCircle(_transform.GetTranslation().x, _transform.GetTranslation().y, 20.0f, RAYWHITE);
-//			DrawCircle3D(Maths::Vector3{ _transform.GetTranslation(), _transform.GetDepth() }, 25.0f, { 0, 0, 1 }, _transform.GetRotationRad(), RAYWHITE);
-//			DrawPolyLines(_transform.GetTranslation(), 14, 50.0f, _transform.GetRotationRad(), RAYWHITE);
-			DrawModelEx(*_model.getModel(), Maths::Vector3{_transform.GetTranslation(), _transform.GetDepth()}, { 0,0,1 }, _transform.GetRotationRad(), { 10,10,0.1f }, RAYWHITE);
-//			DrawPolyLines(_transform.GetTranslation(), 14, 10.0f, _transform.GetRotationRad(), RAYWHITE);
+			auto [_transform, _sprite] = viewTextureTransform.get<TransformComponent, SpriteComponent>(entity);
+			Texture2D texture = LoadTextureFromImage(*_sprite.getSprite());
+			DrawTexturePro(
+				texture,
+				_sprite.source,
+				_sprite.dest,
+				Vector2(_transform.GetTranslation()),
+				_transform.GetRotationRad(),
+				RAYWHITE
+			);
+			UnloadTexture(texture);
 		}
 
 		EndMode2D();
@@ -285,6 +290,10 @@
 
 	template<>
 	void Map::OnComponentAdded<ModelComponent>(Entity entity, ModelComponent & component)
+	{}
+
+	template<>
+	void Map::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
 	{}
 
 	template<>

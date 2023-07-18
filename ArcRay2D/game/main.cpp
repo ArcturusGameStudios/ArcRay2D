@@ -25,8 +25,11 @@ int main()
 	std::list<Map*> maps = {};
 
 	UUID cupModelID;
+	UUID medalSpriteID;
 	std::shared_ptr<Model> cupModel = CreateRef<Model>(LoadModel("assets/models/teamugobj.obj"));
+	std::shared_ptr<Image> medalSprites = CreateRef<Image>(LoadImage("assets/textures/medalsCondensed.png"));
 	AssetManagerInstance->AddModel(cupModelID, cupModel);
+	AssetManagerInstance->AddTexture(medalSpriteID, medalSprites);
 
 	AssetManagerInstance->TestIDs();
 
@@ -41,6 +44,9 @@ int main()
 	Entity circle = startMap.CreateEntity("test circle");
 	circle.GetComponent<TransformComponent>().SetTranslation(Vector2{ 5.0f, 100.0f }, -100.0f);
 	circle.AddComponent<ModelComponent>(cupModelID);
+	circle.AddComponent<SpriteComponent>(medalSpriteID);
+	circle.GetComponent<SpriteComponent>().SetSourceVec(Vector4{ 0, 0, 48, 48 });
+	circle.GetComponent<SpriteComponent>().SetDestVec(Vector4{ 0, 0, 48, 48 });
 	b2BodyDef* def = new b2BodyDef();
 	def->position = circle.GetComponent<TransformComponent>().GetTranslation();
 	def->type = b2BodyType::b2_dynamicBody;

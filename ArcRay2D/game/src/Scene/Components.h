@@ -240,6 +240,20 @@
 		Ref<Model> getModel() { return AssetManager::Instance()->GetModel(refID); } // Returns the corresponding assetManager model with this ID
 	};
 
+	struct SpriteComponent {
+		UUID refID; // Looked up in asset manager
+		Rectangle source = Rectangle{ 0, 0, 0, 0 };
+		Rectangle dest = Rectangle{ 0, 0, 0, 0 };
+		SpriteComponent() = default;
+		SpriteComponent(const SpriteComponent&) = default;
+		SpriteComponent(UUID id) { refID = id; } // Use Ref<Model> to lookup asset manager and find asset ID
+		void SetSourceRect(Rectangle rect) { source = rect; };
+		void SetSourceVec(Vector4 rect) { source = Rectangle{ rect.x, rect.y, rect.z, rect.w }; };
+		void SetDestRec(Rectangle rect) { dest = rect; };
+		void SetDestVec(Vector4 rect) { dest = Rectangle{ rect.x, rect.y, rect.z, rect.w }; };
+		Ref<Image> getSprite() { return AssetManager::Instance()->GetTexture(refID); } // Returns the corresponding assetManager model with this ID
+	};
+
 	struct ProjectileComponent {
 		UUID owner;
 		float damage = 0.0f;

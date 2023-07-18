@@ -21,9 +21,13 @@ public:
 	std::shared_ptr<Model> GetModel(UUID id);
 	bool AddModel(UUID id, std::shared_ptr<Model> model);
 
+	std::shared_ptr<Image> GetTexture(UUID id);
+	bool AddTexture(UUID id, std::shared_ptr<Image> texture);
+
 private:
 	b2World* world = new b2World(b2Vec2(0.0f, 0.0f));
 	std::unordered_map<UUID, std::shared_ptr<Model>> m_models;
+	std::unordered_map<UUID, std::shared_ptr<Image>> m_Textures;
 };
 
 extern AssetManager* AssetManagerInstance; // declaration
