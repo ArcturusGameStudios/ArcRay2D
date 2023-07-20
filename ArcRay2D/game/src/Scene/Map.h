@@ -36,8 +36,8 @@
 		void OnUpdateEditor(Timestep ts, RAYLIB_H::Camera camera);
 		void OnViewportResize(uint32_t width, uint32_t height);
 
-		void DrawCall();
-		void UIDrawCall();
+		void DrawCall(Timestep ts);
+		void UIDrawCall(Timestep ts);
 		void PhysicsUpdate(Timestep ts);
 		void LifetimeUpdate(Timestep ts);
 

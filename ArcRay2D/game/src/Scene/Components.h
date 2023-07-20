@@ -243,15 +243,62 @@
 	struct SpriteComponent {
 		UUID refID; // Looked up in asset manager
 		Rectangle source = Rectangle{ 0, 0, 0, 0 };
-		Rectangle dest = Rectangle{ 0, 0, 0, 0 };
 		SpriteComponent() = default;
 		SpriteComponent(const SpriteComponent&) = default;
 		SpriteComponent(UUID id) { refID = id; } // Use Ref<Model> to lookup asset manager and find asset ID
 		void SetSourceRect(Rectangle rect) { source = rect; };
 		void SetSourceVec(Vector4 rect) { source = Rectangle{ rect.x, rect.y, rect.z, rect.w }; };
-		void SetDestRec(Rectangle rect) { dest = rect; };
-		void SetDestVec(Vector4 rect) { dest = Rectangle{ rect.x, rect.y, rect.z, rect.w }; };
 		Ref<Texture2D> getSprite() { return AssetManager::Instance()->GetTexture(refID); } // Returns the corresponding assetManager model with this ID
+	};
+
+	struct AnimationComponent {
+		std::list<UUID> animations;
+		UUID currentAnim = NULL;
+		float currentTime = 0.0f; // BUG: Keeps setting to 0.0f when passed to AnimationData?
+		bool bIsPlaying = false;
+
+		AnimationComponent() = default;
+		AnimationComponent(const AnimationComponent&) = default;
+
+		// Adds an animation to the list if its not already present
+		UUID AddAnimation(UUID id)
+		{
+			for (auto anim : animations)
+			{
+				if (anim == id)
+					return anim;
+			}
+			animations.push_back(id);
+			return id;
+		}
+
+		// If the ID exists in animation list, set it as currently playing then reset timer
+		void SetAnimation(UUID id)
+		{
+			for (auto anim : animations)
+			{
+				if (anim == id)
+				{
+					currentAnim = anim;
+					currentTime = 0.0f;
+				}
+			}
+		}
+
+		// Gets the current sprite frame from the atlas stored in AssetManager for the given animation time
+		Vector2 GetCurrentFrame()
+		{
+			if (currentAnim != NULL)
+			{
+				auto _anim = AssetManagerInstance->GetAnimation(currentAnim);
+				if (_anim == nullptr)
+					return Vector2{ 0, 0 };
+				return _anim->GetFrame(currentTime);
+			}
+			return Vector2{ 0, 0 };
+		}
+
+		int GetAnimationCount() { return animations.size(); };
 	};
 
 	struct ProjectileComponent {

@@ -155,8 +155,8 @@
 		// Input Polling
 		// Scripting
 		PhysicsUpdate(ts); // Does physics update, provides new transforms
-		DrawCall(); // Draws frame with updated transforms based on scripts and physics
-		UIDrawCall(); // Draws UI items, done after DrawCall so this should draw over the frame
+		DrawCall(ts); // Draws frame with updated transforms based on scripts and physics
+		UIDrawCall(ts); // Draws UI items, done after DrawCall so this should draw over the frame
 		LifetimeUpdate(ts); // Decreases the lifetime of all objects that have one
 
 		// Need to do all processing before calculating if an object is to be destroyed
@@ -168,7 +168,7 @@
 		}
 	}
 
-	void Map::DrawCall()
+	void Map::DrawCall(Timestep ts)
 	{
 		if (!m_IsDrawingEnabled)
 			return;
@@ -183,22 +183,41 @@
 //		std::cout << "Offset: (" << camera->cam.offset.x << ", " << camera->cam.offset.y << ")" << std::endl;
 
 		DrawText("HELLO WORLD", 0, 0, 12, RAYWHITE);
+//		DrawCircle(0, 0, 10.0f, RAYWHITE);
 
 		if (m_IsDebugRendering)
 		{
 			world->DebugDraw();
+
+			auto viewDebugTransform = m_Registry.view<Box2DBodyComponent, TransformComponent>();
+			for (entt::entity entity : viewDebugTransform)
+			{
+				auto [_transform, _physics] = viewDebugTransform.get<TransformComponent, Box2DBodyComponent>(entity);
+				DrawCircle(_physics.body->GetWorldCenter().x, _physics.body->GetWorldCenter().y, 10.0f, RAYWHITE);
+			}
 		}
 
 		auto viewTextureTransform = m_Registry.view<SpriteComponent, TransformComponent>();
-//		auto group = m_Registry.group<TransformComponent>(entt::get<ModelComponent>);
 		for (entt::entity entity : viewTextureTransform)
 		{
-			auto [_transform, _sprite] = viewTextureTransform.get<TransformComponent, SpriteComponent>(entity);
+			auto &[_transform, _sprite] = viewTextureTransform.get<TransformComponent, SpriteComponent>(entity);
+			// IF SPRITE HAS ANIMATIONS
+			if (m_Registry.try_get<AnimationComponent>(entity))
+			{
+				AnimationComponent& _anim = m_Registry.get<AnimationComponent>(entity);
+				if (_anim.bIsPlaying)
+				{
+					Vector2 frame = _anim.GetCurrentFrame();
+//					std::cout << "Sprite: (" << _anim.GetCurrentFrame().x << ", " << _anim.GetCurrentFrame().y << ")" << std::endl;
+					_sprite.SetSourceRect(Rectangle{ frame.x, frame.y, _sprite.source.width, _sprite.source.height });
+				}
+			}
+
 			DrawTexturePro(
 				*_sprite.getSprite(),
 				_sprite.source,
-				_sprite.dest,
-				Vector2(_transform.GetTranslation()),
+				{ _transform.GetTranslation().x, _transform.GetTranslation().y, _sprite.source.width, _sprite.source.height },
+				Vector2{ _sprite.source.width / 2, _sprite.source.height / 2 },
 				_transform.GetRotationRad(),
 				RAYWHITE
 			);
@@ -207,7 +226,7 @@
 		EndMode2D();
 	}
 
-	void Map::UIDrawCall()
+	void Map::UIDrawCall(Timestep ts)
 	{
 	}
 
@@ -229,11 +248,22 @@
 
 	void Map::LifetimeUpdate(Timestep ts)
 	{
-		auto view = m_Registry.view<LifetimeComponent>();
-		for (entt::entity entity : view)
+//		std::cout << ts << std::endl;
+		entt::basic_view viewLife = m_Registry.view<LifetimeComponent>();
+		for (entt::entity entity : viewLife)
 		{
-			view.get<LifetimeComponent>(entity).life -= ts;
+			auto& life = viewLife.get<LifetimeComponent>(entity).life;
+			life -= ts;
 		}
+
+		entt::basic_view viewAnim = m_Registry.view<AnimationComponent>();
+		for (entt::entity entity : viewAnim)
+		{
+			auto &_anim = viewAnim.get<AnimationComponent>(entity);
+			if (_anim.bIsPlaying)
+				_anim.currentTime += ts;
+		}
+
 	}
 
 	void Map::SerializeMap(char* _filepath)
@@ -291,7 +321,11 @@
 	{}
 
 	template<>
-	void Map::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
+	void Map::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent & component)
+	{}
+
+	template<>
+	void Map::OnComponentAdded<AnimationComponent>(Entity entity, AnimationComponent& component)
 	{}
 
 	template<>
