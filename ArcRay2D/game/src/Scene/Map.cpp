@@ -122,10 +122,10 @@
 	}
 	*/
 
-	void Map::OnUpdateEditor(Timestep ts, RAYLIB_H::Camera camera)
+	void Map::OnUpdateEditor(float ts, RAYLIB_H::Camera camera)
 	{}
 
-	void Map::OnUpdateRuntime(Timestep ts)
+	void Map::OnUpdateRuntime(float ts, float timeScale)
 	{
 		Maths::Vector2 _translation = { 0.0f, 0.0f };
 		_translation = m_Registry.get<TransformComponent>(playerCamera).GetTranslation();
@@ -151,13 +151,27 @@
 		}
 		m_Registry.get<TransformComponent>(playerCamera).SetTranslation(_translation);
 
+		if (IsKeyDown(KEY_R))
+		{
+			m_Timescale += ts;
+			if (m_Timescale > 1.0f)
+				m_Timescale = 1.0f;
+		}
+		if (IsKeyDown(KEY_F))
+		{
+			m_Timescale -= ts;
+			if (m_Timescale <= 0.0f)
+				m_Timescale = 0.01f;
+		}
+		std::cout << "Timescale: " << m_Timescale << std::endl;
+
 		// Network Poll?
 		// Input Polling
 		// Scripting
-		PhysicsUpdate(ts); // Does physics update, provides new transforms
+		PhysicsUpdate(ts * m_Timescale); // Does physics update, provides new transforms
 		DrawCall(ts); // Draws frame with updated transforms based on scripts and physics
 		UIDrawCall(ts); // Draws UI items, done after DrawCall so this should draw over the frame
-		LifetimeUpdate(ts); // Decreases the lifetime of all objects that have one
+		LifetimeUpdate(ts * m_Timescale); // Decreases the lifetime of all objects that have one
 
 		// Need to do all processing before calculating if an object is to be destroyed
 		auto view = m_Registry.view<LifetimeComponent>();
@@ -168,7 +182,7 @@
 		}
 	}
 
-	void Map::DrawCall(Timestep ts)
+	void Map::DrawCall(float ts)
 	{
 		if (!m_IsDrawingEnabled)
 			return;
@@ -226,11 +240,11 @@
 		EndMode2D();
 	}
 
-	void Map::UIDrawCall(Timestep ts)
+	void Map::UIDrawCall(float ts)
 	{
 	}
 
-	void Map::PhysicsUpdate(Timestep ts)
+	void Map::PhysicsUpdate(float ts)
 	{
 		if (!m_IsPhysicsEnabled)
 			return;
@@ -243,10 +257,11 @@
 			auto [_transform, _body] = groupBody.get<TransformComponent, Box2DBodyComponent>(entity);
 			_transform.SetTranslation(Maths::Vector3(_body.body->GetPosition().x, _body.body->GetPosition().y, 0.0f));
 			_transform.SetRotationRad(_body.body->GetAngle());
+			std::cout << "Body: (" << _body.body->GetPosition().x << ", " << _body.body->GetPosition().y << ")" << std::endl;
 		}
 	}
 
-	void Map::LifetimeUpdate(Timestep ts)
+	void Map::LifetimeUpdate(float ts)
 	{
 //		std::cout << ts << std::endl;
 		entt::basic_view viewLife = m_Registry.view<LifetimeComponent>();

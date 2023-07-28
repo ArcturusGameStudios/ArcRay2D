@@ -34,25 +34,25 @@ struct AnimationData {
 		// Wraps animTime around the total animation length to get a nice loop
 		while (animTime > totalAnimLength)
 		{
-			std::cout << "Old Input: " << animTime << std::endl;
-			std::cout << "Anim Length: " << totalAnimLength << std::endl;
+//			std::cout << "Old Input: " << animTime << std::endl;
+//			std::cout << "Anim Length: " << totalAnimLength << std::endl;
 			animTime -= totalAnimLength;
-			std::cout << "New Input: " << animTime << std::endl;
+//			std::cout << "New Input: " << animTime << std::endl;
 		}
 
 		// Reverse iterate through the animations; if time is greater than current frame then return frame
 		// If time is less than current frame then its not passed frame yet, continue iteration
-		std::cout << "Anim time: " << animTime << std::endl;
+//		std::cout << "Anim time: " << animTime << std::endl;
 		for (auto& iter = atlasKeyframes.rbegin(); iter != atlasKeyframes.rend(); ++iter)
 		{
-			std::cout << "Frame time: " << iter->first * (1 / framesPerSecond) << std::endl;
+//			std::cout << "Frame time: " << iter->first * (1 / framesPerSecond) << std::endl;
 			if (iter->first * (1 / framesPerSecond) <= animTime)
 				return iter->second;
 		}
 		// If all other frames fail, this is the first frame
-		std::cout << "First frame" << std::endl;
-		std::cout << std::endl;
-		std::cout << std::endl;
+//		std::cout << "First frame" << std::endl;
+//		std::cout << std::endl;
+//		std::cout << std::endl;
 		return atlasKeyframes.begin()->second;
 	};
 };
@@ -82,7 +82,7 @@ public:
 	bool AddAnimation(UUID id, std::shared_ptr<AnimationData> texture);
 
 private:
-	b2World* world = new b2World(b2Vec2(0.0f, 0.0f));
+	b2World* world = new b2World(b2Vec2(0.0f, -10.0f));
 	std::unordered_map<UUID, std::shared_ptr<Model>> m_models;
 	std::unordered_map<UUID, std::shared_ptr<Texture2D>> m_Textures;
 	std::unordered_map<UUID, std::shared_ptr<AnimationData>> m_SpriteAnimations;

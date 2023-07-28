@@ -31,15 +31,16 @@
 //		rp3d::PhysicsWorld* GetWorld() { return world; };
 		entt::registry* GetRegistry() { return &m_Registry; };
 		std::list<Entity>* const  GetEntityList() { return &m_EntityList; };
+		b2World* const GetPhysicsWorld() { return world; };
 
-		void OnUpdateRuntime(Timestep ts);
-		void OnUpdateEditor(Timestep ts, RAYLIB_H::Camera camera);
+		void OnUpdateRuntime(float ts, float timeScale);
+		void OnUpdateEditor(float ts, RAYLIB_H::Camera camera);
 		void OnViewportResize(uint32_t width, uint32_t height);
 
-		void DrawCall(Timestep ts);
-		void UIDrawCall(Timestep ts);
-		void PhysicsUpdate(Timestep ts);
-		void LifetimeUpdate(Timestep ts);
+		void DrawCall(float ts);
+		void UIDrawCall(float ts);
+		void PhysicsUpdate(float ts);
+		void LifetimeUpdate(float ts);
 
 		void SerializeMap(char* _filepath);
 		void DeserializeMap(char* _filepath);
@@ -48,6 +49,7 @@
 		bool m_IsDrawingEnabled = false;
 		bool m_IsPhysicsEnabled = false;
 		bool m_IsDebugRendering = false;
+		float m_Timescale = 1.0f;
 
 	private:
 		template<typename T>

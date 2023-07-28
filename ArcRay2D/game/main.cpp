@@ -4,8 +4,11 @@
 #include "src/Scene/Entity.h"
 #include "src/Scene/Components.h"
 
+
 int main()
 {
+	float timeScale = 1.0f;
+
 	//	if (SteamAPI_Init() == false)
 	//	{
 	//		std::cout << "STEAM FAILED TO INIT" << std::endl;
@@ -157,16 +160,18 @@ int main()
 	b2CircleShape* shape = new b2CircleShape();
 	shape->m_radius = circle.GetComponent<TransformComponent>().GetScale().x;
 	circle.AddComponent<Box2DBodyComponent>(def);
-	circle.GetComponent<Box2DBodyComponent>().SetShape(shape, 0.0f);
+	circle.GetComponent<Box2DBodyComponent>().SetShape(shape, 1.0f);
 	circle.AddComponent<AnimationComponent>();
 	circle.GetComponent<AnimationComponent>().AddAnimation(medalAnimationID);
 	circle.GetComponent<AnimationComponent>().SetAnimation(medalAnimationID);
-	circle.GetComponent<AnimationComponent>().bIsPlaying = true;
+	circle.GetComponent<AnimationComponent>().bIsPlaying = false;
 
 #pragma endregion
 
 //	startMap.GetWorld()->setIsGravityEnabled(false);
 //	startMap.GetWorld()->setIsDebugRenderingEnabled(true);
+	startMap.GetPhysicsWorld()->SetGravity(b2Vec2(0.0f, 9.81f));
+	std::cout << "Gravity: (" << (startMap.GetPhysicsWorld()->GetGravity()).x << ", " << (startMap.GetPhysicsWorld()->GetGravity()).y << ")" << std::endl;;
 	startMap.m_IsDebugRendering = true;
 	maps.push_back(&startMap);
 
@@ -191,7 +196,7 @@ int main()
 		{
 			for (auto const &map : maps)
 			{
-				map->OnUpdateRuntime(ts);
+				map->OnUpdateRuntime(ts, timeScale);
 			}
 		}
 		DrawFPS(0, 0);
